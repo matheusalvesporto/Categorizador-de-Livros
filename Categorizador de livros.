@@ -1,0 +1,155 @@
+from datetime import datetime, timedelta
+
+class Livro:
+    contador = 0
+
+    def __init__(self, nome, autor, ano_publicacao, num_paginas, preco=0.0):
+        Livro.contador += 1
+        self.numero_cadastro = f"{Livro.contador:03}"  # Formata o número de cadastro com 3 dígitos
+        self.nome = nome
+        self.autor = autor
+        self.ano_publicacao = ano_publicacao
+        self.num_paginas = num_paginas
+        self.preco = preco
+        self.vendido = False
+
+    def exibir_informacoes(self):
+        print(f"Cadastro #{self.numero_cadastro}")
+        print(f"Nome: {self.nome}")
+        print(f"Autor: {self.autor}")
+        print(f"Ano de Publicação: {self.ano_publicacao}")
+        print(f"Número de Páginas: {self.num_paginas}")
+        print(f"Preço: R${self.preco:.2f}")
+        if self.vendido:
+            print("O livro foi vendido.")
+        else:
+            print("Livro disponível para venda.")
+        print("-" * 30)
+
+    def vender(self):
+        self.vendido = True
+
+
+def cadastrar_livro():
+    nome = input("Nome do Livro: ")
+    autor = input("Autor: ")
+    ano_publicacao = input("Ano de Publicação: ")
+    num_paginas = input("Número de Páginas: ")
+    
+    while True:
+        preco_str = input("Preço do Livro (use ',' para separar os centavos): R$")
+        preco_str = preco_str.replace('.', '').replace(',', '.')
+        try:
+            preco = float(preco_str)
+            break
+        except ValueError:
+            print("Preço inválido. Por favor, insira o valor no formato correto.")
+
+    livro = Livro(nome, autor, ano_publicacao, num_paginas, preco)
+    return livro
+
+
+def mostrar_lista_livros(livros):
+    while True:
+        if not livros:
+            print("Nenhum livro cadastrado.")
+        else:
+            print("\nLista de Livros Cadastrados:")
+            for livro in livros:
+                livro.exibir_informacoes()
+
+        print("\nOpções:")
+        print("1. Voltar ao menu principal")
+        print("2. Sair")
+
+        opcao = input("Escolha uma opção (1-2): ")
+
+        if opcao == '1':
+            break
+        elif opcao == '2':
+            print("Saindo...")
+            exit()
+        else:
+            print("Opção inválida! Tente novamente.")
+
+
+def buscar_livro_por_numero(livros):
+    numero = input("Digite o número de cadastro do livro (3 dígitos): ")
+    for livro in livros:
+        if livro.numero_cadastro == numero:
+            livro.exibir_informacoes()
+            return livro
+    print(f"Livro com número de cadastro {numero} não encontrado.")
+    return None
+
+
+def vender_livro(livros):
+    livro = buscar_livro_por_numero(livros)
+    if livro and not livro.vendido:
+        livro.vender()
+        print(f"O livro '{livro.nome}' foi vendido por R${livro.preco:.2f}.")
+    elif livro:
+        if livro.vendido:
+            print("O livro já foi vendido.")
+        else:
+            print("O livro não está disponível para venda.")
+
+
+def mostrar_valor_total_vendido(livros):
+    total_vendido = sum(livro.preco for livro in livros if livro.vendido)
+    print(f"Valor total vendido: R${total_vendido:.2f}")
+
+
+def menu_livro(livros):
+    while True:
+        print("\nMenu de Livros:")
+        print("1. Ver lista de livros")
+        print("2. Procurar livro por número de cadastro")
+        print("3. Cadastrar novo livro")
+        print("4. Vender livro")
+        print("5. Mostrar valor total vendido")
+        print("6. Voltar ao menu principal")
+        print("7. Sair")
+
+        opcao = input("Escolha uma opção (1-7): ")
+
+        if opcao == '1':
+            mostrar_lista_livros(livros)
+        elif opcao == '2':
+            buscar_livro_por_numero(livros)
+        elif opcao == '3':
+            novo_livro = cadastrar_livro()
+            livros.append(novo_livro)
+            novo_livro.exibir_informacoes()
+        elif opcao == '4':
+            vender_livro(livros)
+        elif opcao == '5':
+            mostrar_valor_total_vendido(livros)
+        elif opcao == '6':
+            break
+        elif opcao == '7':
+            print("Saindo...")
+            exit()
+        else:
+            print("Opção inválida! Tente novamente.")
+
+def main():
+    livros = []
+
+    while True:
+        print("\nMenu Principal:")
+        print("1. Gerenciar Livros")
+        print("2. Sair")
+
+        opcao = input("Escolha uma opção (1-2): ")
+
+        if opcao == '1':
+            menu_livro(livros)
+        elif opcao == '2':
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida! Tente novamente.")
+
+if __name__ == "__main__":
+    main()
